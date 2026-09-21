@@ -37,6 +37,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "28948625-923b-41f8-aecd-e6f02f167de4"
+      }
+    },
+    "owner": "isakproxds-team"
   }
 }
