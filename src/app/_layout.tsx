@@ -2,6 +2,7 @@ import { DarkTheme, DefaultTheme, Stack, ThemeProvider, type Theme } from 'expo-
 import { useColorScheme } from 'react-native';
 
 import { Colors } from '@/constants/theme';
+import { EntriesProvider } from '@/context/entries';
 
 function navigationTheme(scheme: 'light' | 'dark'): Theme {
   const base = scheme === 'dark' ? DarkTheme : DefaultTheme;
@@ -24,9 +25,11 @@ export default function RootLayout() {
   const colorScheme = useColorScheme();
   return (
     <ThemeProvider value={navigationTheme(colorScheme === 'dark' ? 'dark' : 'light')}>
-      <Stack>
-        <Stack.Screen name="index" options={{ title: 'Pawlog' }} />
-      </Stack>
+      <EntriesProvider>
+        <Stack>
+          <Stack.Screen name="index" options={{ title: 'Pawlog' }} />
+        </Stack>
+      </EntriesProvider>
     </ThemeProvider>
   );
 }

@@ -5,7 +5,7 @@ import { ErrorMessage } from '@/components/error-message';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Spacing } from '@/constants/theme';
-import { useEntries } from '@/hooks/use-entries';
+import { useEntries } from '@/context/entries';
 import { useTheme } from '@/hooks/use-theme';
 
 export default function EntriesScreen() {
