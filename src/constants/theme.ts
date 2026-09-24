@@ -71,7 +71,7 @@ export const Spacing = {
   six: 64,
 } as const;
 
-export const MaxContentWidth = 800;
+export const MaxContentWidth = 600;
 
 export const Radius = {
   sm: 8,
