@@ -1,6 +1,7 @@
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider, type Theme } from 'expo-router';
 import { useColorScheme } from 'react-native';
 
+import { NewEntryButton } from '@/components/new-entry-button';
 import { Colors } from '@/constants/theme';
 import { EntriesProvider } from '@/context/entries';
 
@@ -27,7 +28,10 @@ export default function RootLayout() {
     <ThemeProvider value={navigationTheme(colorScheme === 'dark' ? 'dark' : 'light')}>
       <EntriesProvider>
         <Stack>
-          <Stack.Screen name="index" options={{ title: 'Pawlog' }} />
+          <Stack.Screen
+            name="index"
+            options={{ title: 'Pawlog', headerRight: () => <NewEntryButton /> }}
+          />
           <Stack.Screen name="new-entry" options={{ title: 'New entry', presentation: 'modal' }} />
         </Stack>
       </EntriesProvider>
