@@ -1,6 +1,6 @@
 /**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
+ * Pawlog's colors, the same palette as the design tokens in the webapp.
+ * The dark variant keeps the warm tones so the app feels the same in both modes.
  */
 
 import '@/global.css';
@@ -9,18 +9,28 @@ import { Platform } from 'react-native';
 
 export const Colors = {
   light: {
-    text: '#000000',
-    background: '#ffffff',
-    backgroundElement: '#F0F0F3',
-    backgroundSelected: '#E0E1E6',
-    textSecondary: '#60646C',
+    text: '#2e2018',
+    textSecondary: '#7a6a5d',
+    background: '#fbf6f0',
+    surface: '#ffffff',
+    border: '#ecdfd2',
+    accent: '#d9722f',
+    accentSoft: '#fbe4d2',
+    success: '#3f7d54',
+    danger: '#b3261e',
+    dangerSoft: '#fdecea',
   },
   dark: {
-    text: '#ffffff',
-    background: '#000000',
-    backgroundElement: '#212225',
-    backgroundSelected: '#2E3135',
-    textSecondary: '#B0B4BA',
+    text: '#f5ebe3',
+    textSecondary: '#b8a697',
+    background: '#1c1512',
+    surface: '#2a211c',
+    border: '#3d3029',
+    accent: '#e8894a',
+    accentSoft: '#4a2f1d',
+    success: '#7fc496',
+    danger: '#f2b8b5',
+    dangerSoft: '#4a1f1c',
   },
 } as const;
 
@@ -62,3 +72,9 @@ export const Spacing = {
 } as const;
 
 export const MaxContentWidth = 800;
+
+export const Radius = {
+  sm: 8,
+  md: 14,
+  lg: 22,
+} as const;
