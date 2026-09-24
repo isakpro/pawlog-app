@@ -28,6 +28,7 @@ export default function RootLayout() {
       <EntriesProvider>
         <Stack>
           <Stack.Screen name="index" options={{ title: 'Pawlog' }} />
+          <Stack.Screen name="new-entry" options={{ title: 'New entry', presentation: 'modal' }} />
         </Stack>
       </EntriesProvider>
     </ThemeProvider>
