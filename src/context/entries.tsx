@@ -1,8 +1,13 @@
 import { createContext, use, useEffect, useState, type ReactNode } from 'react';
 
 import { getErrorMessage } from '@/api/client';
-import { getEntries } from '@/api/entries';
-import type { DiaryEntry } from '@/types/entry';
+import { createEntry, getEntries } from '@/api/entries';
+import type { DiaryEntry, EntryRequest } from '@/types/entry';
+
+// Same order as the API: newest date first, and the newest entry first within a day.
+function sortNewestFirst(entries: DiaryEntry[]) {
+  return [...entries].sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
+}
 
 function useEntriesState() {
   const [entries, setEntries] = useState<DiaryEntry[]>([]);
@@ -37,7 +42,13 @@ function useEntriesState() {
     setLoadAttempt((current) => current + 1);
   }
 
-  return { entries, isLoading, loadError, reload };
+  async function addEntry(entry: EntryRequest) {
+    const created = await createEntry(entry);
+    setEntries((current) => sortNewestFirst([created, ...current]));
+    return created;
+  }
+
+  return { entries, isLoading, loadError, reload, addEntry };
 }
 
 const EntriesContext = createContext<ReturnType<typeof useEntriesState> | null>(null);
