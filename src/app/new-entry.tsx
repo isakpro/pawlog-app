@@ -5,11 +5,13 @@ import { Pressable, ScrollView, StyleSheet, View } from 'react-native';
 import { getErrorMessage } from '@/api/client';
 import { ErrorMessage } from '@/components/error-message';
 import { FormField } from '@/components/form-field';
+import { PhotoPicker } from '@/components/photo-picker';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { MaxContentWidth, Radius, Spacing } from '@/constants/theme';
 import { useEntries } from '@/context/entries';
 import { useTheme } from '@/hooks/use-theme';
+import type { PhotoUpload } from '@/types/entry';
 
 type FormError = {
   title: string;
@@ -51,6 +53,7 @@ export default function NewEntryScreen() {
   const [title, setTitle] = useState('');
   const [story, setStory] = useState('');
   const [trainingGoal, setTrainingGoal] = useState('');
+  const [photo, setPhoto] = useState<PhotoUpload | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [formError, setFormError] = useState<FormError | null>(null);
 
@@ -60,6 +63,19 @@ export default function NewEntryScreen() {
     } else {
       router.replace('/');
     }
+  }
+
+  function reset() {
+    setDate(today());
+    setTitle('');
+    setStory('');
+    setTrainingGoal('');
+    setPhoto(null);
+  }
+
+  function handlePhotoChange(selected: PhotoUpload | null) {
+    setFormError(null);
+    setPhoto(selected);
   }
 
   async function handleSave() {
@@ -73,7 +89,7 @@ export default function NewEntryScreen() {
     setFormError(null);
 
     try {
-      await addEntry(
+      const { photoError } = await addEntry(
         {
           date,
           title: title.trim(),
@@ -81,9 +97,18 @@ export default function NewEntryScreen() {
           trainingGoal: trainingGoal.trim(),
           goalCompleted: false,
         },
-        null,
+        photo,
       );
-      close();
+
+      if (!photoError) {
+        close();
+        return;
+      }
+
+      // The entry is saved, so the form is cleared: saving again would create a duplicate.
+      reset();
+      setFormError({ title: 'The entry was saved without its photo', message: photoError });
+      setIsSaving(false);
     } catch (error) {
       setFormError({ title: 'Could not save the entry', message: getErrorMessage(error) });
       setIsSaving(false);
@@ -127,6 +152,12 @@ export default function NewEntryScreen() {
           onChangeText={setTrainingGoal}
           placeholder="Come back on recall near water"
           maxLength={120}
+        />
+        <PhotoPicker
+          photo={photo}
+          disabled={isSaving}
+          onChange={handlePhotoChange}
+          onError={(message) => setFormError({ title: 'Could not use that photo', message })}
         />
 
         {formError && <ErrorMessage title={formError.title} message={formError.message} />}
