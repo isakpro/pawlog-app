@@ -1,8 +1,8 @@
 import { createContext, use, useEffect, useState, type ReactNode } from 'react';
 
 import { getErrorMessage } from '@/api/client';
-import { createEntry, getEntries } from '@/api/entries';
-import type { DiaryEntry, EntryRequest } from '@/types/entry';
+import { createEntry, getEntries, uploadPhoto } from '@/api/entries';
+import type { DiaryEntry, EntryRequest, PhotoUpload } from '@/types/entry';
 
 // Same order as the API: newest date first, and the newest entry first within a day.
 function sortNewestFirst(entries: DiaryEntry[]) {
@@ -42,10 +42,23 @@ function useEntriesState() {
     setLoadAttempt((current) => current + 1);
   }
 
-  async function addEntry(entry: EntryRequest) {
+  // The photo is uploaded in a second request because the upload needs the
+  // entry's id. If only the upload fails, the entry is still saved and shown.
+  async function addEntry(entry: EntryRequest, photo: PhotoUpload | null) {
     const created = await createEntry(entry);
-    setEntries((current) => sortNewestFirst([created, ...current]));
-    return created;
+    let saved = created;
+    let photoError: string | null = null;
+
+    if (photo) {
+      try {
+        saved = await uploadPhoto(created.id, photo);
+      } catch (error) {
+        photoError = getErrorMessage(error);
+      }
+    }
+
+    setEntries((current) => sortNewestFirst([saved, ...current]));
+    return { photoError };
   }
 
   return { entries, isLoading, loadError, reload, addEntry };

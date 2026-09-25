@@ -9,3 +9,11 @@ export interface DiaryEntry {
 }
 
 export type EntryRequest = Omit<DiaryEntry, 'id' | 'photoUrl'>;
+
+// A photo picked with expo-image-picker. On web the picker also gives a File.
+export interface PhotoUpload {
+  uri: string;
+  name: string;
+  mimeType: string;
+  file?: File;
+}

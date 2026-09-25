@@ -73,13 +73,16 @@ export default function NewEntryScreen() {
     setFormError(null);
 
     try {
-      await addEntry({
-        date,
-        title: title.trim(),
-        story: story.trim(),
-        trainingGoal: trainingGoal.trim(),
-        goalCompleted: false,
-      });
+      await addEntry(
+        {
+          date,
+          title: title.trim(),
+          story: story.trim(),
+          trainingGoal: trainingGoal.trim(),
+          goalCompleted: false,
+        },
+        null,
+      );
       close();
     } catch (error) {
       setFormError({ title: 'Could not save the entry', message: getErrorMessage(error) });
