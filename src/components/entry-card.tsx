@@ -1,6 +1,9 @@
 import { Image } from 'expo-image';
-import { StyleSheet, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, StyleSheet, View } from 'react-native';
 
+import { getErrorMessage } from '@/api/client';
+import { ErrorMessage } from '@/components/error-message';
 import { ThemedText } from '@/components/themed-text';
 import { Fonts, Radius, Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
@@ -14,11 +17,32 @@ const dateFormat = new Intl.DateTimeFormat('en-GB', {
 
 type EntryCardProps = {
   entry: DiaryEntry;
+  onToggleGoal: (id: number) => Promise<void>;
 };
 
-export function EntryCard({ entry }: EntryCardProps) {
-  const { date, title, story, trainingGoal, goalCompleted, photoUrl } = entry;
+export function EntryCard({ entry, onToggleGoal }: EntryCardProps) {
+  const { id, date, title, story, trainingGoal, goalCompleted, photoUrl } = entry;
   const theme = useTheme();
+  const [isSaving, setIsSaving] = useState(false);
+  const [toggleError, setToggleError] = useState<string | null>(null);
+
+  async function handleToggle() {
+    setIsSaving(true);
+    setToggleError(null);
+
+    try {
+      await onToggleGoal(id);
+    } catch (error) {
+      setToggleError(getErrorMessage(error));
+    } finally {
+      setIsSaving(false);
+    }
+  }
+
+  function toggleLabel() {
+    if (isSaving) return 'Saving…';
+    return goalCompleted ? '✓ Done' : 'Mark as done';
+  }
 
   return (
     <View style={[styles.card, { backgroundColor: theme.surface, borderColor: theme.border }]}>
@@ -54,10 +78,35 @@ export function EntryCard({ entry }: EntryCardProps) {
             <ThemedText
               themeColor={goalCompleted ? 'success' : 'text'}
               style={goalCompleted && styles.goalDone}>
-              {goalCompleted ? `✓ ${trainingGoal}` : trainingGoal}
+              {trainingGoal}
             </ThemedText>
+            <Pressable
+              role="checkbox"
+              aria-checked={goalCompleted}
+              aria-disabled={isSaving}
+              aria-label={`Training goal done: ${trainingGoal}`}
+              disabled={isSaving}
+              onPress={handleToggle}
+              style={({ pressed }) => [
+                styles.toggle,
+                goalCompleted
+                  ? { backgroundColor: theme.success, borderColor: theme.success }
+                  : { borderColor: theme.accent },
+                { opacity: isSaving ? 0.6 : pressed ? 0.7 : 1 },
+              ]}>
+              <ThemedText
+                type="smallBold"
+                themeColor={goalCompleted ? undefined : 'accent'}
+                style={goalCompleted && { color: theme.surface }}>
+                {toggleLabel()}
+              </ThemedText>
+            </Pressable>
           </View>
         ) : null}
+
+        {toggleError && (
+          <ErrorMessage title="Could not update the training goal" message={toggleError} />
+        )}
       </View>
     </View>
   );
@@ -107,5 +156,14 @@ const styles = StyleSheet.create({
   },
   goalDone: {
     textDecorationLine: 'line-through',
+  },
+  toggle: {
+    alignSelf: 'flex-start',
+    minHeight: 40,
+    justifyContent: 'center',
+    marginTop: Spacing.two,
+    paddingHorizontal: Spacing.three,
+    borderWidth: 1,
+    borderRadius: Radius.sm,
   },
 });

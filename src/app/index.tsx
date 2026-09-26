@@ -9,7 +9,7 @@ import { useEntries } from '@/context/entries';
 import { useTheme } from '@/hooks/use-theme';
 
 export default function EntriesScreen() {
-  const { entries, isLoading, loadError, reload } = useEntries();
+  const { entries, isLoading, loadError, reload, toggleGoal } = useEntries();
   const theme = useTheme();
   const hasEntries = entries.length > 0;
 
@@ -37,7 +37,7 @@ export default function EntriesScreen() {
       <FlatList
         data={entries}
         keyExtractor={(entry) => String(entry.id)}
-        renderItem={({ item }) => <EntryCard entry={item} />}
+        renderItem={({ item }) => <EntryCard entry={item} onToggleGoal={toggleGoal} />}
         refreshing={isLoading}
         onRefresh={reload}
         contentInsetAdjustmentBehavior="automatic"
