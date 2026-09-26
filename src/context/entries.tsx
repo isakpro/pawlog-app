@@ -1,7 +1,7 @@
 import { createContext, use, useEffect, useState, type ReactNode } from 'react';
 
 import { getErrorMessage } from '@/api/client';
-import { createEntry, getEntries, uploadPhoto } from '@/api/entries';
+import { createEntry, getEntries, updateEntry, uploadPhoto } from '@/api/entries';
 import type { DiaryEntry, EntryRequest, PhotoUpload } from '@/types/entry';
 
 // Same order as the API: newest date first, and the newest entry first within a day.
@@ -61,7 +61,27 @@ function useEntriesState() {
     return { photoError };
   }
 
-  return { entries, isLoading, loadError, reload, addEntry };
+  // PUT replaces the whole entry, so every field is sent, with only
+  // goalCompleted flipped. The card then shows what the API saved.
+  async function toggleGoal(id: number) {
+    const entry = entries.find((candidate) => candidate.id === id);
+
+    if (!entry) return;
+
+    const updated = await updateEntry(id, {
+      date: entry.date,
+      title: entry.title,
+      story: entry.story,
+      trainingGoal: entry.trainingGoal,
+      goalCompleted: !entry.goalCompleted,
+    });
+
+    setEntries((current) =>
+      current.map((candidate) => (candidate.id === updated.id ? updated : candidate)),
+    );
+  }
+
+  return { entries, isLoading, loadError, reload, addEntry, toggleGoal };
 }
 
 const EntriesContext = createContext<ReturnType<typeof useEntriesState> | null>(null);

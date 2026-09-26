@@ -40,3 +40,12 @@ export async function uploadPhoto(id: number, photo: PhotoUpload) {
   });
   return withFullPhotoUrl(updated);
 }
+
+export async function updateEntry(id: number, entry: EntryRequest) {
+  const updated = await request<DiaryEntry>(`/api/entries/${id}`, {
+    method: 'PUT',
+    headers: jsonHeaders,
+    body: JSON.stringify(entry),
+  });
+  return withFullPhotoUrl(updated);
+}
