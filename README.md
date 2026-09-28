@@ -96,6 +96,11 @@ Stäng av API:et och ladda om appen. Då visas ett felmeddelande med en
 sparar ett inlägg eller bockar av ett mål: felet visas där du tryckte, och det
 du skrivit ligger kvar.
 
+Visar appen *Could not reach the server* fast API:et kör, kontrollera att den
+körs på port **8081**. Är porten upptagen frågar Expo om en annan port, men
+API:et släpper bara in anrop från `localhost:8081` (CORS), så anropen blockeras.
+Stäng det som använder 8081 och starta om med `npm run web`.
+
 ### API-adressen
 
 Adressen till API:et ligger i `.env`:
